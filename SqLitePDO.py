@@ -9,14 +9,10 @@ class SqLitePDO:
         self.results = []
 
     def insert(self, table_name, values):
-        not_for_first = ""
-        param = ""
-        keys = ""
-        for key, value in values.items():
-            keys = keys + not_for_first + key
-            param = param + not_for_first + "'" + value + "'"
-            not_for_first = ","
-        query = "INSERT INTO " + table_name + " (" + keys + ")" + " VALUES (" + param + ")"
+        # create strings of comma separated values (value1,value2,value3)
+        param = ','.join(f"'{value}'" for value in values.values())
+        keys = ','.join(values)
+        query = f"INSERT INTO {table_name} ({keys})  VALUES ({param})"
         self.exec_query(query)
 
     def select(self, table_name, where=None):
@@ -53,7 +49,7 @@ class SqLitePDO:
 
         db_path = os.getenv("DB_PATH")
         db_name = os.getenv("DB_NAME")
-        db_location = db_path + '/' + db_name
+        db_location = f'{db_path}/{db_name}'
         if not os.path.isfile(db_location):
             print('ERRORE: database non trovato!')
             return
